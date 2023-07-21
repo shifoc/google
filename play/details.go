@@ -122,6 +122,15 @@ func (d Details) Version_Code() (uint64, error) {
    return value, nil
 }
 
+// .details.appDetails.changelog
+func (d Details) Changelog() (string, error) {
+	value, err := d.Get(13).Get(1).Get_String(15)
+	if err != nil {
+		return "", err_device
+	}
+	return value, nil
+}
+
 // .details.appDetails
 // I dont know the name of field 70, but the similar field 13 is called
 // .numDownloads
@@ -194,6 +203,12 @@ func (d Details) MarshalText() ([]byte, error) {
       return nil, err
    } else {
       b = fmt.Append(b, v)
+   }
+   b = append(b, "\nchangelog: "...)
+   if v, err := d.Changelog(); err != nil {
+      return nil, err
+   } else {
+      b = append(b, v...)
    }
    return b, nil
 }
