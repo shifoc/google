@@ -1,11 +1,5 @@
 # Google Play
 
-> I’m not really sure what the point of this video is, but I guess just be
-> generous. Be kind to people, because you never know how much they might need
-> it, or how far it’ll go.
->
-> [NakeyJakey (2018)](//youtube.com/watch?v=Cr0UYNKmrUs)
-
 Download APK from Google Play or send API requests
 
 ## How to install?
@@ -14,7 +8,7 @@ This module works with Windows, macOS or Linux. Download Go [1] and extract
 archive. Then download Google Play Zip and extract archive. Then navigate to:
 
 ~~~
-google-main/cmd/play
+googleplay-main/cmd/play
 ~~~
 
 and enter:
@@ -56,6 +50,7 @@ title: YouTube
 upload date: May 19, 2023
 version: 18.20.34
 version code: 1537856960
+changelog: for new features, look in the education section
 ~~~
 
 Purchase app. Only needs to be done once per Google account:
@@ -71,28 +66,3 @@ downloaded:
 ~~~
 play -d com.google.android.youtube -v 1537856960
 ~~~
-
-## Contact
-
-<dl>
-   <dt>
-   email
-   </dt>
-   <dd>
-   srpen6@gmail.com
-   </dd>
-   <dt>
-   Discord
-   </dt>
-   <dd>
-   srpen6
-   </dd>
-   <dd>
-   https://discord.com/invite/WWq6rFb8Rf
-   </dd>
-</dl>
-
-## Money
-
-Software is not licensed for commercial use. If you wish to purchase a
-commercial license, or for other business questions, contact me.
