@@ -50,7 +50,7 @@ title: YouTube
 upload date: May 19, 2023
 version: 18.20.34
 version code: 1537856960
-changelog: for new features, look in the education section
+changelog: For new features, look for in-product education &amp; notifications sharing the feature and how to use it!
 ~~~
 
 Purchase app. Only needs to be done once per Google account:

@@ -126,7 +126,7 @@ func (d Details) Version_Code() (uint64, error) {
 func (d Details) Changelog() (string, error) {
 	value, err := d.Get(13).Get(1).Get_String(15)
 	if err != nil {
-		return "", err_device
+		return "", nil
 	}
 	return value, nil
 }
