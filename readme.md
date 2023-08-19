@@ -8,7 +8,7 @@ This module works with Windows, macOS or Linux. Download Go [1] and extract
 archive. Then download Google Play Zip and extract archive. Then navigate to:
 
 ~~~
-googleplay-main/cmd/play
+google-main/cmd/play
 ~~~
 
 and enter:
