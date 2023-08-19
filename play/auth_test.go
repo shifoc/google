@@ -7,16 +7,26 @@ import (
    "time"
 )
 
-func user_info(name string) (map[string]string, error) {
-   b, err := os.ReadFile(name)
+func Test_Header(t *testing.T) {
+   home, err := os.UserHomeDir()
    if err != nil {
-      return nil, err
+      t.Fatal(err)
    }
-   var m map[string]string
-   if err := json.Unmarshal(b, &m); err != nil {
-      return nil, err
+   var head Header
+   head.Auth = make(Auth)
+   {
+      b, err := os.ReadFile(home + "/google/play/auth.txt")
+      if err != nil {
+         t.Fatal(err)
+      }
+      head.Auth.UnmarshalText(b)
    }
-   return m, nil
+   for i := 0; i < 9; i++ {
+      if head.Auth.Auth() == "" {
+         t.Fatalf("%+v", head)
+      }
+      time.Sleep(time.Second)
+   }
 }
 
 func Test_Auth(t *testing.T) {
@@ -28,27 +38,27 @@ func Test_Auth(t *testing.T) {
    if err != nil {
       t.Fatal(err)
    }
-   res, err := New_Auth(u["username"], u["password"])
+   a, err := New_Auth(u["username"], u["password"])
    if err != nil {
       t.Fatal(err)
    }
-   defer res.Body.Close()
-   if err := res.Write_File(home + "/google/play/auth.txt"); err != nil {
-      t.Fatal(err)
+   {
+      b, err := a.MarshalText()
+      if err != nil {
+         t.Fatal(err)
+      }
+      os.WriteFile(home + "/google/play/auth.txt", b, 0666)
    }
 }
 
-func Test_Header(t *testing.T) {
-   home, err := os.UserHomeDir()
+func user_info(name string) (map[string]string, error) {
+   b, err := os.ReadFile(name)
    if err != nil {
-      t.Fatal(err)
+      return nil, err
    }
-   var head Header
-   head.Read_Auth(home + "/google/play/auth.txt")
-   for i := 0; i < 9; i++ {
-      if head.Auth.Get_Auth() == "" {
-         t.Fatalf("%+v", head)
-      }
-      time.Sleep(time.Second)
+   var m map[string]string
+   if err := json.Unmarshal(b, &m); err != nil {
+      return nil, err
    }
+   return m, nil
 }
