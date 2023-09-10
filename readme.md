@@ -7,15 +7,15 @@ Download APK from Google Play or send API requests
 This module works with Windows, macOS or Linux. Download Go [1] and extract
 archive. Then download Google Play Zip and extract archive. Then navigate to:
 
-~~~
+```
 google-main/cmd/play
-~~~
+```
 
 and enter:
 
-~~~
+```
 go build
-~~~
+```
 
 1. https://go.dev/dl
 
@@ -32,19 +32,19 @@ valid for 10 minutes:
 
 then exchange authorization code for refresh token (`aas_et`):
 
-~~~
+```
 play -c oauth2_4/0Adeu5B...
-~~~
+```
 
 Create a file containing `X-DFE-Device-ID` (GSF ID) for future requests:
 
-~~~
+```
 play -device
-~~~
+```
 
 Get app details:
 
-~~~
+```
 > play -d com.google.android.youtube
 creator: Google LLC
 file: APK APK APK APK
@@ -56,21 +56,21 @@ upload date: May 19, 2023
 version: 18.20.34
 version code: 1537856960
 changelog: For new features, look for in-product education &amp; notifications sharing the feature and how to use it!
-~~~
+```
 
 Purchase app. Only needs to be done once per Google account:
 
-~~~
+```
 play -d com.google.android.youtube -purchase
-~~~
+```
 
 Download APK. You need to specify any valid version code. The latest code is
 provided by the previous details command. If APK is split, all pieces will be
 downloaded:
 
-~~~
+```
 play -d com.google.android.youtube -v 1537856960
-~~~
+```
 
 ## Goals
 
@@ -86,27 +86,6 @@ to bypass. Since Google Services Framework 21 (2014), Google uses bot-guard via
 JavaScript to protect the login. I do not know how to reverse that, and I did
 not find any implementations online.
 
-## Contact
+## Thanks:
 
-<dl>
-   <dt>
-   email
-   </dt>
-   <dd>
-   srpen6@gmail.com
-   </dd>
-   <dt>
-   Discord
-   </dt>
-   <dd>
-   srpen6
-   </dd>
-   <dd>
-   https://discord.com/invite/WWq6rFb8Rf
-   </dd>
-</dl>
-
-## Money
-
-Software is not licensed for commercial use. If you wish to purchase a
-commercial license, or for other business questions, contact me.
+    - https://github.com/1268/google
