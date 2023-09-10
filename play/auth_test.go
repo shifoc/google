@@ -1,64 +1,48 @@
 package play
 
 import (
-   "encoding/json"
-   "os"
-   "testing"
-   "time"
+	"fmt"
+	"os"
+	"testing"
 )
 
-func Test_Header(t *testing.T) {
-   home, err := os.UserHomeDir()
-   if err != nil {
-      t.Fatal(err)
-   }
-   var head Header
-   head.Auth = make(Auth)
-   {
-      b, err := os.ReadFile(home + "/google/play/auth.txt")
-      if err != nil {
-         t.Fatal(err)
-      }
-      head.Auth.UnmarshalText(b)
-   }
-   for i := 0; i < 9; i++ {
-      if head.Auth.Auth() == "" {
-         t.Fatalf("%+v", head)
-      }
-      time.Sleep(time.Second)
-   }
+func Test_Auth_Read(t *testing.T) {
+	home, err := os.UserHomeDir()
+	if err != nil {
+		t.Fatal(err)
+	}
+	var head Header
+	{
+		b, err := os.ReadFile(home + "/google/play/token.txt")
+		if err != nil {
+			t.Fatal(err)
+		}
+		if err := head.Set_Authorization(b); err != nil {
+			t.Fatal(err)
+		}
+	}
+	{
+		b, err := os.ReadFile(home + "/google/play/x86.bin")
+		if err != nil {
+			t.Fatal(err)
+		}
+		if err := head.Set_Device(b); err != nil {
+			t.Fatal(err)
+		}
+	}
+	fmt.Println(head)
 }
 
-func Test_Auth(t *testing.T) {
-   home, err := os.UserHomeDir()
-   if err != nil {
-      t.Fatal(err)
-   }
-   u, err := user_info(home + "/gmail.json")
-   if err != nil {
-      t.Fatal(err)
-   }
-   a, err := New_Auth(u["username"], u["password"])
-   if err != nil {
-      t.Fatal(err)
-   }
-   {
-      b, err := a.MarshalText()
-      if err != nil {
-         t.Fatal(err)
-      }
-      os.WriteFile(home + "/google/play/auth.txt", b, 0666)
-   }
-}
+const code = "oauth2_4/0Adeu5BVtOS_6vKpJRrBcF7xoa5V-J8XfKlMG3J1JbIj5bcaEb5IOX..."
 
-func user_info(name string) (map[string]string, error) {
-   b, err := os.ReadFile(name)
-   if err != nil {
-      return nil, err
-   }
-   var m map[string]string
-   if err := json.Unmarshal(b, &m); err != nil {
-      return nil, err
-   }
-   return m, nil
+func Test_Auth_Write(t *testing.T) {
+	home, err := os.UserHomeDir()
+	if err != nil {
+		t.Fatal(err)
+	}
+	text, err := New_Refresh_Token(code)
+	if err != nil {
+		t.Fatal(err)
+	}
+	os.WriteFile(home+"/google/play/token.txt", text, 0666)
 }
