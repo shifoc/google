@@ -22,6 +22,8 @@ jobs:
     - name: Navigate to internal/play directory
       run: cd internal/play
 
+    - run: ls
+
     - name: Build for Linux
       run: GOOS=linux GOARCH=amd64 go build -o play-linux
 
