@@ -1,0 +1,49 @@
+name: Build Go program for all platforms
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v5
+
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.22'
+
+    - name: Build for Linux
+      run: GOOS=linux GOARCH=amd64 go build -o play-linux
+
+    - name: Build for macOS
+      run: GOOS=darwin GOARCH=amd64 go build -o play-darwin
+
+    - name: Build for Windows
+      run: GOOS=windows GOARCH=amd64 go build -o play-windows.exe
+
+    - name: Archive builds
+      uses: actions/upload-artifact@v4
+      with:
+        name: builds
+        path: |
+          play-linux
+          play-darwin
+          play-windows.exe
+
+    - name: Create Release and Upload Assets
+      uses: softprops/action-gh-release@v2
+      with:
+        files: |
+          play-linux
+          play-darwin
+          play-windows.exe
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
