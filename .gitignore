@@ -1,1 +1,4 @@
-cmd/play/play.exe
+*.exe
+*.apk
+*.bin
+token.txt

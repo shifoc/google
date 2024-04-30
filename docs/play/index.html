@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="doc2go">
+    <link href="../_/css/main.css" rel="stylesheet" />
+    <link rel="apple-touch-icon" sizes="180x180" href="../_/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../_/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../_/icons/favicon-16x16.png">
+    <link rel="shortcut icon" href="../_/icons/favicon.ico">
+    <title>play</title>
+</head>
+  <body>
+    <nav>
+        <a href="..">154.pages.dev/google</a>/play<span class="navbar-right">
+          v1.4.5 | <a href="..">Root</a> | <a href="#pkg-index">Index</a></span>
+      </nav>
+    <main><h2 id="pkg-overview">package play</h2>
+<pre class="chroma"><span class="kn">import</span> <span class="s">&#34;154.pages.dev/google/play&#34;</span></pre>
+<h3 id="pkg-index">Index</h3>
+<ul>
+  <li><a href="#pkg-variables">Variables</a></li><li>
+      <a href="#ABI">type ABI</a>
+      <ul>
+          <li><a href="#ABI.Set">func (a *ABI) Set(s string) error</a></li>
+          <li><a href="#ABI.String">func (a ABI) String() string</a></li>
+          </ul>
+      </li>
+  <li>
+      <a href="#APK">type APK</a>
+      <ul>
+          <li><a href="#APK.Field1">func (a APK) Field1() (string, bool)</a></li>
+          <li><a href="#APK.URL">func (a APK) URL() (string, bool)</a></li>
+          </ul>
+      </li>
+  <li>
+      <a href="#Delivery">type Delivery</a>
+      <ul>
+          <li><a href="#Delivery.APK">func (d Delivery) APK() chan APK</a></li>
+          <li><a href="#Delivery.OBB">func (d Delivery) OBB() chan OBB</a></li>
+          <li><a href="#Delivery.URL">func (d Delivery) URL() (string, bool)</a></li>
+          </ul>
+      </li>
+  <li>
+      <a href="#Details">type Details</a>
+      <ul>
+          <li><a href="#Details.Downloads">func (d Details) Downloads() (uint64, bool)</a></li>
+          <li><a href="#Details.Name">func (d Details) Name() (string, bool)</a></li>
+          <li><a href="#Details.String">func (d Details) String() string</a></li>
+          </ul>
+      </li>
+  <li>
+      <a href="#GoogleAuth">type GoogleAuth</a>
+      <ul>
+          <li><a href="#GoogleAuth.Auth">func (g *GoogleAuth) Auth(token GoogleToken) error</a></li>
+          </ul>
+      </li>
+  <li>
+      <a href="#GoogleCheckin">type GoogleCheckin</a>
+      <ul>
+          <li><a href="#GoogleCheckin.Acquire">func (g GoogleCheckin) Acquire(auth GoogleAuth, doc string) error</a></li>
+          <li><a href="#GoogleCheckin.Checkin">func (g *GoogleCheckin) Checkin(c GoogleDevice) error</a></li>
+          <li><a href="#GoogleCheckin.Delivery">func (g GoogleCheckin) Delivery(auth GoogleAuth, app StoreApp, single bool) (*Delivery, error)</a></li>
+          <li><a href="#GoogleCheckin.Details">func (g GoogleCheckin) Details(auth GoogleAuth, doc string, single bool) (*Details, error)</a></li>
+          <li><a href="#GoogleCheckin.Sync">func (g GoogleCheckin) Sync(device GoogleDevice) error</a></li>
+          <li><a href="#GoogleCheckin.Unmarshal">func (g *GoogleCheckin) Unmarshal() error</a></li>
+          </ul>
+      </li>
+  <li>
+      <a href="#GoogleDevice">type GoogleDevice</a>
+      </li>
+  <li>
+      <a href="#GoogleToken">type GoogleToken</a>
+      <ul>
+          <li><a href="#GoogleToken.Auth">func (g *GoogleToken) Auth(oauth_token string) error</a></li>
+          <li><a href="#GoogleToken.Unmarshal">func (g *GoogleToken) Unmarshal() error</a></li>
+          </ul>
+      </li>
+  <li>
+      <a href="#OBB">type OBB</a>
+      <ul>
+          <li><a href="#OBB.Field1">func (o OBB) Field1() (uint64, bool)</a></li>
+          <li><a href="#OBB.URL">func (o OBB) URL() (string, bool)</a></li>
+          </ul>
+      </li>
+  <li>
+      <a href="#StoreApp">type StoreApp</a>
+      <ul>
+          <li><a href="#StoreApp.APK">func (s StoreApp) APK(v string) string</a></li>
+          <li><a href="#StoreApp.OBB">func (s StoreApp) OBB(v uint64) string</a></li>
+          </ul>
+      </li>
+  </ul><h3 id="pkg-variables">Variables</h3>
+  <pre class="chroma"><span class="kd">var</span> <span id="ABIs"><span class="nx">ABIs</span></span> <span class="p">=</span> <span class="kd">map</span><span class="p">[</span><a href="https://pkg.go.dev/builtin#int"><span class="kt">int</span></a><span class="p">]</span><a href="https://pkg.go.dev/builtin#string"><span class="kt">string</span></a><span class="p">{</span>
+
+	<span class="mi">0</span><span class="p">:</span> <span class="s">&#34;x86&#34;</span><span class="p">,</span>
+
+	<span class="mi">1</span><span class="p">:</span> <span class="s">&#34;armeabi-v7a&#34;</span><span class="p">,</span>
+
+	<span class="mi">2</span><span class="p">:</span> <span class="s">&#34;arm64-v8a&#34;</span><span class="p">,</span>
+<span class="p">}</span></pre>
+  <pre class="chroma"><span class="kd">var</span> <span id="Phone"><span class="nx">Phone</span></span> <span class="p">=</span> <a href="#GoogleDevice"><span class="nx">GoogleDevice</span></a><span class="p">{</span>
+	<span class="nx">Feature</span><span class="p">:</span> <span class="p">[]</span><a href="https://pkg.go.dev/builtin#string"><span class="kt">string</span></a><span class="p">{</span>
+
+		<span class="s">&#34;android.hardware.location.gps&#34;</span><span class="p">,</span>
+
+		<span class="s">&#34;android.software.midi&#34;</span><span class="p">,</span>
+
+		<span class="s">&#34;android.hardware.camera.front&#34;</span><span class="p">,</span>
+
+		<span class="s">&#34;android.hardware.camera.flash&#34;</span><span class="p">,</span>
+
+		<span class="s">&#34;android.hardware.microphone&#34;</span><span class="p">,</span>
+
+		<span class="s">&#34;android.software.device_admin&#34;</span><span class="p">,</span>
+
+		<span class="s">&#34;android.hardware.touchscreen&#34;</span><span class="p">,</span>
+		<span class="s">&#34;android.hardware.wifi&#34;</span><span class="p">,</span>
+
+		<span class="s">&#34;android.hardware.sensor.accelerometer&#34;</span><span class="p">,</span>
+
+		<span class="s">&#34;android.hardware.camera&#34;</span><span class="p">,</span>
+		<span class="s">&#34;android.hardware.location&#34;</span><span class="p">,</span>
+		<span class="s">&#34;android.hardware.screen.portrait&#34;</span><span class="p">,</span>
+
+		<span class="s">&#34;android.hardware.location.network&#34;</span><span class="p">,</span>
+
+		<span class="s">&#34;android.hardware.bluetooth&#34;</span><span class="p">,</span>
+		<span class="s">&#34;android.hardware.bluetooth_le&#34;</span><span class="p">,</span>
+		<span class="s">&#34;android.hardware.camera.autofocus&#34;</span><span class="p">,</span>
+		<span class="s">&#34;android.hardware.usb.host&#34;</span><span class="p">,</span>
+
+		<span class="s">&#34;android.hardware.sensor.compass&#34;</span><span class="p">,</span>
+
+		<span class="s">&#34;android.hardware.telephony&#34;</span><span class="p">,</span>
+	<span class="p">},</span>
+	<span class="nx">Library</span><span class="p">:</span> <span class="p">[]</span><a href="https://pkg.go.dev/builtin#string"><span class="kt">string</span></a><span class="p">{</span>
+
+		<span class="s">&#34;org.apache.http.legacy&#34;</span><span class="p">,</span>
+
+		<span class="s">&#34;android.test.runner&#34;</span><span class="p">,</span>
+	<span class="p">},</span>
+	<span class="nx">Texture</span><span class="p">:</span> <span class="p">[]</span><a href="https://pkg.go.dev/builtin#string"><span class="kt">string</span></a><span class="p">{</span>
+
+		<span class="s">&#34;GL_OES_compressed_ETC1_RGB8_texture&#34;</span><span class="p">,</span>
+
+		<span class="s">&#34;GL_KHR_texture_compression_astc_ldr&#34;</span><span class="p">,</span>
+	<span class="p">},</span>
+<span class="p">}</span></pre>
+  <h3 id="pkg-types">Types</h3>
+  <h3 id="ABI">type ABI</h3>
+    <pre class="chroma"><span class="kd">type</span> <span class="nx">ABI</span> <a href="https://pkg.go.dev/builtin#int"><span class="kt">int</span></a></pre>
+    <p>developer.android.com/ndk/guides/abis
+<h4 id="ABI.Set">func (*ABI) Set</h4>
+  <pre class="chroma"><span class="kd">func</span> <span class="p">(</span><span class="nx">a</span> <span class="o">*</span><a href="#ABI"><span class="nx">ABI</span></a><span class="p">)</span> <span class="nf">Set</span><span class="p">(</span><span class="nx">s</span> <a href="https://pkg.go.dev/builtin#string"><span class="kt">string</span></a><span class="p">)</span> <a href="https://pkg.go.dev/builtin#error"><span class="kt">error</span></a></pre>
+  <h4 id="ABI.String">func (ABI) String</h4>
+  <pre class="chroma"><span class="kd">func</span> <span class="p">(</span><span class="nx">a</span> <a href="#ABI"><span class="nx">ABI</span></a><span class="p">)</span> <span class="nf">String</span><span class="p">()</span> <a href="https://pkg.go.dev/builtin#string"><span class="kt">string</span></a></pre>
+  <h3 id="APK">type APK</h3>
+    <pre class="chroma"><span class="kd">type</span> <span class="nx">APK</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="c1">// contains filtered or unexported fields
+</span><span class="c1"></span><span class="p">}</span></pre>
+    <h4 id="APK.Field1">func (APK) Field1</h4>
+  <pre class="chroma"><span class="kd">func</span> <span class="p">(</span><span class="nx">a</span> <a href="#APK"><span class="nx">APK</span></a><span class="p">)</span> <span class="nf">Field1</span><span class="p">()</span> <span class="p">(</span><a href="https://pkg.go.dev/builtin#string"><span class="kt">string</span></a><span class="p">,</span> <a href="https://pkg.go.dev/builtin#bool"><span class="kt">bool</span></a><span class="p">)</span></pre>
+  <h4 id="APK.URL">func (APK) URL</h4>
+  <pre class="chroma"><span class="kd">func</span> <span class="p">(</span><span class="nx">a</span> <a href="#APK"><span class="nx">APK</span></a><span class="p">)</span> <span class="nf">URL</span><span class="p">()</span> <span class="p">(</span><a href="https://pkg.go.dev/builtin#string"><span class="kt">string</span></a><span class="p">,</span> <a href="https://pkg.go.dev/builtin#bool"><span class="kt">bool</span></a><span class="p">)</span></pre>
+  <h3 id="Delivery">type Delivery</h3>
+    <pre class="chroma"><span class="kd">type</span> <span class="nx">Delivery</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="c1">// contains filtered or unexported fields
+</span><span class="c1"></span><span class="p">}</span></pre>
+    <h4 id="Delivery.APK">func (Delivery) APK</h4>
+  <pre class="chroma"><span class="kd">func</span> <span class="p">(</span><span class="nx">d</span> <a href="#Delivery"><span class="nx">Delivery</span></a><span class="p">)</span> <span class="nf">APK</span><span class="p">()</span> <span class="kd">chan</span> <a href="#APK"><span class="nx">APK</span></a></pre>
+  <h4 id="Delivery.OBB">func (Delivery) OBB</h4>
+  <pre class="chroma"><span class="kd">func</span> <span class="p">(</span><span class="nx">d</span> <a href="#Delivery"><span class="nx">Delivery</span></a><span class="p">)</span> <span class="nf">OBB</span><span class="p">()</span> <span class="kd">chan</span> <a href="#OBB"><span class="nx">OBB</span></a></pre>
+  <h4 id="Delivery.URL">func (Delivery) URL</h4>
+  <pre class="chroma"><span class="kd">func</span> <span class="p">(</span><span class="nx">d</span> <a href="#Delivery"><span class="nx">Delivery</span></a><span class="p">)</span> <span class="nf">URL</span><span class="p">()</span> <span class="p">(</span><a href="https://pkg.go.dev/builtin#string"><span class="kt">string</span></a><span class="p">,</span> <a href="https://pkg.go.dev/builtin#bool"><span class="kt">bool</span></a><span class="p">)</span></pre>
+  <h3 id="Details">type Details</h3>
+    <pre class="chroma"><span class="kd">type</span> <span class="nx">Details</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="c1">// contains filtered or unexported fields
+</span><span class="c1"></span><span class="p">}</span></pre>
+    <h4 id="Details.Downloads">func (Details) Downloads</h4>
+  <pre class="chroma"><span class="kd">func</span> <span class="p">(</span><span class="nx">d</span> <a href="#Details"><span class="nx">Details</span></a><span class="p">)</span> <span class="nf">Downloads</span><span class="p">()</span> <span class="p">(</span><a href="https://pkg.go.dev/builtin#uint64"><span class="kt">uint64</span></a><span class="p">,</span> <a href="https://pkg.go.dev/builtin#bool"><span class="kt">bool</span></a><span class="p">)</span></pre>
+  <h4 id="Details.Name">func (Details) Name</h4>
+  <pre class="chroma"><span class="kd">func</span> <span class="p">(</span><span class="nx">d</span> <a href="#Details"><span class="nx">Details</span></a><span class="p">)</span> <span class="nf">Name</span><span class="p">()</span> <span class="p">(</span><a href="https://pkg.go.dev/builtin#string"><span class="kt">string</span></a><span class="p">,</span> <a href="https://pkg.go.dev/builtin#bool"><span class="kt">bool</span></a><span class="p">)</span></pre>
+  <h4 id="Details.String">func (Details) String</h4>
+  <pre class="chroma"><span class="kd">func</span> <span class="p">(</span><span class="nx">d</span> <a href="#Details"><span class="nx">Details</span></a><span class="p">)</span> <span class="nf">String</span><span class="p">()</span> <a href="https://pkg.go.dev/builtin#string"><span class="kt">string</span></a></pre>
+  <h3 id="GoogleAuth">type GoogleAuth</h3>
+    <pre class="chroma"><span class="kd">type</span> <span class="nx">GoogleAuth</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="c1">// contains filtered or unexported fields
+</span><span class="c1"></span><span class="p">}</span></pre>
+    <h4 id="GoogleAuth.Auth">func (*GoogleAuth) Auth</h4>
+  <pre class="chroma"><span class="kd">func</span> <span class="p">(</span><span class="nx">g</span> <span class="o">*</span><a href="#GoogleAuth"><span class="nx">GoogleAuth</span></a><span class="p">)</span> <span class="nf">Auth</span><span class="p">(</span><span class="nx">token</span> <a href="#GoogleToken"><span class="nx">GoogleToken</span></a><span class="p">)</span> <a href="https://pkg.go.dev/builtin#error"><span class="kt">error</span></a></pre>
+  <h3 id="GoogleCheckin">type GoogleCheckin</h3>
+    <pre class="chroma"><span class="kd">type</span> <span class="nx">GoogleCheckin</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span id="GoogleCheckin.Data"><span class="nx">Data</span></span> <span class="p">[]</span><a href="https://pkg.go.dev/builtin#byte"><span class="kt">byte</span></a>
+	<span class="c1">// contains filtered or unexported fields
+</span><span class="c1"></span><span class="p">}</span></pre>
+    <h4 id="GoogleCheckin.Acquire">func (GoogleCheckin) Acquire</h4>
+  <pre class="chroma"><span class="kd">func</span> <span class="p">(</span><span class="nx">g</span> <a href="#GoogleCheckin"><span class="nx">GoogleCheckin</span></a><span class="p">)</span> <span class="nf">Acquire</span><span class="p">(</span><span class="nx">auth</span> <a href="#GoogleAuth"><span class="nx">GoogleAuth</span></a><span class="p">,</span> <span class="nx">doc</span> <a href="https://pkg.go.dev/builtin#string"><span class="kt">string</span></a><span class="p">)</span> <a href="https://pkg.go.dev/builtin#error"><span class="kt">error</span></a></pre>
+  <h4 id="GoogleCheckin.Checkin">func (*GoogleCheckin) Checkin</h4>
+  <pre class="chroma"><span class="kd">func</span> <span class="p">(</span><span class="nx">g</span> <span class="o">*</span><a href="#GoogleCheckin"><span class="nx">GoogleCheckin</span></a><span class="p">)</span> <span class="nf">Checkin</span><span class="p">(</span><span class="nx">c</span> <a href="#GoogleDevice"><span class="nx">GoogleDevice</span></a><span class="p">)</span> <a href="https://pkg.go.dev/builtin#error"><span class="kt">error</span></a></pre>
+  <h4 id="GoogleCheckin.Delivery">func (GoogleCheckin) Delivery</h4>
+  <pre class="chroma"><span class="kd">func</span> <span class="p">(</span><span class="nx">g</span> <a href="#GoogleCheckin"><span class="nx">GoogleCheckin</span></a><span class="p">)</span> <span class="nf">Delivery</span><span class="p">(</span>
+	<span class="nx">auth</span> <a href="#GoogleAuth"><span class="nx">GoogleAuth</span></a><span class="p">,</span> <span class="nx">app</span> <a href="#StoreApp"><span class="nx">StoreApp</span></a><span class="p">,</span> <span class="nx">single</span> <a href="https://pkg.go.dev/builtin#bool"><span class="kt">bool</span></a><span class="p">,</span>
+<span class="p">)</span> <span class="p">(</span><span class="o">*</span><a href="#Delivery"><span class="nx">Delivery</span></a><span class="p">,</span> <a href="https://pkg.go.dev/builtin#error"><span class="kt">error</span></a><span class="p">)</span></pre>
+  <h4 id="GoogleCheckin.Details">func (GoogleCheckin) Details</h4>
+  <pre class="chroma"><span class="kd">func</span> <span class="p">(</span><span class="nx">g</span> <a href="#GoogleCheckin"><span class="nx">GoogleCheckin</span></a><span class="p">)</span> <span class="nf">Details</span><span class="p">(</span>
+	<span class="nx">auth</span> <a href="#GoogleAuth"><span class="nx">GoogleAuth</span></a><span class="p">,</span> <span class="nx">doc</span> <a href="https://pkg.go.dev/builtin#string"><span class="kt">string</span></a><span class="p">,</span> <span class="nx">single</span> <a href="https://pkg.go.dev/builtin#bool"><span class="kt">bool</span></a><span class="p">,</span>
+<span class="p">)</span> <span class="p">(</span><span class="o">*</span><a href="#Details"><span class="nx">Details</span></a><span class="p">,</span> <a href="https://pkg.go.dev/builtin#error"><span class="kt">error</span></a><span class="p">)</span></pre>
+  <h4 id="GoogleCheckin.Sync">func (GoogleCheckin) Sync</h4>
+  <pre class="chroma"><span class="kd">func</span> <span class="p">(</span><span class="nx">g</span> <a href="#GoogleCheckin"><span class="nx">GoogleCheckin</span></a><span class="p">)</span> <span class="nf">Sync</span><span class="p">(</span><span class="nx">device</span> <a href="#GoogleDevice"><span class="nx">GoogleDevice</span></a><span class="p">)</span> <a href="https://pkg.go.dev/builtin#error"><span class="kt">error</span></a></pre>
+  <h4 id="GoogleCheckin.Unmarshal">func (*GoogleCheckin) Unmarshal</h4>
+  <pre class="chroma"><span class="kd">func</span> <span class="p">(</span><span class="nx">g</span> <span class="o">*</span><a href="#GoogleCheckin"><span class="nx">GoogleCheckin</span></a><span class="p">)</span> <span class="nf">Unmarshal</span><span class="p">()</span> <a href="https://pkg.go.dev/builtin#error"><span class="kt">error</span></a></pre>
+  <h3 id="GoogleDevice">type GoogleDevice</h3>
+    <pre class="chroma"><span class="kd">type</span> <span class="nx">GoogleDevice</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span id="GoogleDevice.ABI"><span class="nx">ABI</span></span>     <a href="https://pkg.go.dev/builtin#string"><span class="kt">string</span></a>
+	<span id="GoogleDevice.Feature"><span class="nx">Feature</span></span> <span class="p">[]</span><a href="https://pkg.go.dev/builtin#string"><span class="kt">string</span></a>
+	<span id="GoogleDevice.Library"><span class="nx">Library</span></span> <span class="p">[]</span><a href="https://pkg.go.dev/builtin#string"><span class="kt">string</span></a>
+	<span id="GoogleDevice.Texture"><span class="nx">Texture</span></span> <span class="p">[]</span><a href="https://pkg.go.dev/builtin#string"><span class="kt">string</span></a>
+<span class="p">}</span></pre>
+    <h3 id="GoogleToken">type GoogleToken</h3>
+    <pre class="chroma"><span class="kd">type</span> <span class="nx">GoogleToken</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span id="GoogleToken.Data"><span class="nx">Data</span></span> <span class="p">[]</span><a href="https://pkg.go.dev/builtin#byte"><span class="kt">byte</span></a>
+	<span class="c1">// contains filtered or unexported fields
+</span><span class="c1"></span><span class="p">}</span></pre>
+    <h4 id="GoogleToken.Auth">func (*GoogleToken) Auth</h4>
+  <pre class="chroma"><span class="kd">func</span> <span class="p">(</span><span class="nx">g</span> <span class="o">*</span><a href="#GoogleToken"><span class="nx">GoogleToken</span></a><span class="p">)</span> <span class="nf">Auth</span><span class="p">(</span><span class="nx">oauth_token</span> <a href="https://pkg.go.dev/builtin#string"><span class="kt">string</span></a><span class="p">)</span> <a href="https://pkg.go.dev/builtin#error"><span class="kt">error</span></a></pre>
+  <h4 id="GoogleToken.Unmarshal">func (*GoogleToken) Unmarshal</h4>
+  <pre class="chroma"><span class="kd">func</span> <span class="p">(</span><span class="nx">g</span> <span class="o">*</span><a href="#GoogleToken"><span class="nx">GoogleToken</span></a><span class="p">)</span> <span class="nf">Unmarshal</span><span class="p">()</span> <a href="https://pkg.go.dev/builtin#error"><span class="kt">error</span></a></pre>
+  <h3 id="OBB">type OBB</h3>
+    <pre class="chroma"><span class="kd">type</span> <span class="nx">OBB</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span class="c1">// contains filtered or unexported fields
+</span><span class="c1"></span><span class="p">}</span></pre>
+    <h4 id="OBB.Field1">func (OBB) Field1</h4>
+  <pre class="chroma"><span class="kd">func</span> <span class="p">(</span><span class="nx">o</span> <a href="#OBB"><span class="nx">OBB</span></a><span class="p">)</span> <span class="nf">Field1</span><span class="p">()</span> <span class="p">(</span><a href="https://pkg.go.dev/builtin#uint64"><span class="kt">uint64</span></a><span class="p">,</span> <a href="https://pkg.go.dev/builtin#bool"><span class="kt">bool</span></a><span class="p">)</span></pre>
+  <h4 id="OBB.URL">func (OBB) URL</h4>
+  <pre class="chroma"><span class="kd">func</span> <span class="p">(</span><span class="nx">o</span> <a href="#OBB"><span class="nx">OBB</span></a><span class="p">)</span> <span class="nf">URL</span><span class="p">()</span> <span class="p">(</span><a href="https://pkg.go.dev/builtin#string"><span class="kt">string</span></a><span class="p">,</span> <a href="https://pkg.go.dev/builtin#bool"><span class="kt">bool</span></a><span class="p">)</span></pre>
+  <h3 id="StoreApp">type StoreApp</h3>
+    <pre class="chroma"><span class="kd">type</span> <span class="nx">StoreApp</span> <span class="kd">struct</span> <span class="p">{</span>
+	<span id="StoreApp.ID"><span class="nx">ID</span></span>      <a href="https://pkg.go.dev/builtin#string"><span class="kt">string</span></a>
+	<span id="StoreApp.Version"><span class="nx">Version</span></span> <a href="https://pkg.go.dev/builtin#uint64"><span class="kt">uint64</span></a>
+<span class="p">}</span></pre>
+    <p>play.google.com/store/apps/details?id=com.google.android.apps.youtube.unplugged
+<h4 id="StoreApp.APK">func (StoreApp) APK</h4>
+  <pre class="chroma"><span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <a href="#StoreApp"><span class="nx">StoreApp</span></a><span class="p">)</span> <span class="nf">APK</span><span class="p">(</span><span class="nx">v</span> <a href="https://pkg.go.dev/builtin#string"><span class="kt">string</span></a><span class="p">)</span> <a href="https://pkg.go.dev/builtin#string"><span class="kt">string</span></a></pre>
+  <h4 id="StoreApp.OBB">func (StoreApp) OBB</h4>
+  <pre class="chroma"><span class="kd">func</span> <span class="p">(</span><span class="nx">s</span> <a href="#StoreApp"><span class="nx">StoreApp</span></a><span class="p">)</span> <span class="nf">OBB</span><span class="p">(</span><span class="nx">v</span> <a href="https://pkg.go.dev/builtin#uint64"><span class="kt">uint64</span></a><span class="p">)</span> <a href="https://pkg.go.dev/builtin#string"><span class="kt">string</span></a></pre>
+  </main>
+    <hr>
+    <footer>
+      <small id="generated-by-footer">
+        Generated with <a href="https://abhinav.github.io/doc2go/">doc2go</a>
+      </small>
+    </footer>
+    <script src="../_/js/permalink.js"></script>
+  </body>
+</html>

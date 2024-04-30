@@ -1,67 +1,93 @@
 package play
 
 import (
-   "154.pages.dev/tls"
+   "errors"
    "io"
    "net/http"
    "net/url"
+   "strings"
 )
 
-// You can also use host "android.clients.google.com", but it also uses
-// TLS fingerprinting.
-func New_Auth(email, passwd string) (Auth, error) {
-   client := *http.DefaultClient
-   client.Transport = &tls.Transport{Spec: tls.Android_API_26}
-   res, err := client.PostForm(
-      "https://android.googleapis.com/auth",
-      url.Values{
-         "Email": {email},
-         "Passwd": {passwd},
-         "client_sig": {""},
-         "droidguard_results": {"-"},
-      },
-   )
-   if err != nil {
-      return nil, err
-   }
-   defer res.Body.Close()
-   text, err := io.ReadAll(res.Body)
-   if err != nil {
-      return nil, err
-   }
-   a := make(Auth)
-   if err := a.UnmarshalText(text); err != nil {
-      return nil, err
-   }
-   return a, nil
+func parse_query(query string) (url.Values, error) {
+   query = strings.ReplaceAll(query, "\n", "&")
+   return url.ParseQuery(query)
 }
 
-func (a Auth) Auth() string {
-   return a["Auth"]
+type GoogleAuth struct {
+   v url.Values
 }
 
-func (a Auth) Exchange() error {
-   // these values take from Android API 28
+func (g *GoogleAuth) Auth(token GoogleToken) error {
    res, err := http.PostForm(
-      "https://android.googleapis.com/auth",
-      url.Values{
-         "Token": {a.Token()},
-         "app": {"com.android.vending"},
+      "https://android.googleapis.com/auth", url.Values{
+         "Token":      {token.get_token()},
+         "app":        {"com.android.vending"},
          "client_sig": {"38918a453d07199354f8b19af05ec6562ced5788"},
-         "service": {"oauth2:https://www.googleapis.com/auth/googleplay"},
+         "service":    {"oauth2:https://www.googleapis.com/auth/googleplay"},
       },
    )
    if err != nil {
       return err
    }
    defer res.Body.Close()
+   if res.StatusCode != http.StatusOK {
+      var b strings.Builder
+      res.Write(&b)
+      return errors.New(b.String())
+   }
    text, err := io.ReadAll(res.Body)
    if err != nil {
       return err
    }
-   return a.UnmarshalText(text)
+   g.v, err = parse_query(string(text))
+   if err != nil {
+      return err
+   }
+   return nil
 }
 
-func (a Auth) Token() string {
-   return a["Token"]
+func (g GoogleAuth) get_auth() string {
+   return g.v.Get("Auth")
+}
+
+type GoogleToken struct {
+   Data []byte
+   v url.Values
+}
+
+func (g *GoogleToken) Auth(oauth_token string) error {
+   res, err := http.PostForm(
+      "https://android.googleapis.com/auth", url.Values{
+         "ACCESS_TOKEN": {"1"},
+         "Token":        {oauth_token},
+         "service":      {"ac2dm"},
+      },
+   )
+   if err != nil {
+      return err
+   }
+   defer res.Body.Close()
+   if res.StatusCode != http.StatusOK {
+      var b strings.Builder
+      res.Write(&b)
+      return errors.New(b.String())
+   }
+   g.Data, err = io.ReadAll(res.Body)
+   if err != nil {
+      return err
+   }
+   return nil
+}
+
+func (g *GoogleToken) Unmarshal() error {
+   var err error
+   g.v, err = parse_query(string(g.Data))
+   if err != nil {
+      return err
+   }
+   return nil
+}
+
+func (g GoogleToken) get_token() string {
+   return g.v.Get("Token")
 }
