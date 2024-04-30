@@ -1,150 +1,121 @@
 package play
 
 import (
-	"154.pages.dev/encoding/protobuf"
-	"errors"
-	"io"
-	"net/http"
-	"net/url"
-	"strconv"
+   "154.pages.dev/protobuf"
+   "errors"
+   "io"
+   "net/http"
+   "net/url"
+   "strconv"
 )
 
-func (h Header) Delivery(doc string, vc uint64) (*Delivery, error) {
-	req, err := http.NewRequest(
-		"GET", "https://play-fe.googleapis.com/fdfe/delivery", nil,
-	)
-	if err != nil {
-		return nil, err
-	}
-	req.URL.RawQuery = url.Values{
-		"doc": {doc},
-		"vc":  {strconv.FormatUint(vc, 10)},
-	}.Encode()
-	req.Header.Set(h.Agent())
-	req.Header.Set(h.Authorization())
-	req.Header.Set(h.Device())
-	res, err := http.DefaultClient.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	defer res.Body.Close()
-	data, err := io.ReadAll(res.Body)
-	if err != nil {
-		return nil, err
-	}
-	// ResponseWrapper
-	mes, err := protobuf.Consume(data)
-	if err != nil {
-		return nil, err
-	}
-	// payload
-	mes, _ = mes.Message(1)
-	// deliveryResponse
-	mes, _ = mes.Message(21)
-	status, err := mes.Varint(1)
-	if err != nil {
-		return nil, err
-	}
-	switch status {
-	case 3:
-		return nil, errors.New("purchase required")
-	case 5:
-		return nil, errors.New("invalid version")
-	}
-	mes, err = mes.Message(2)
-	if err != nil {
-		return nil, errors.New("appDeliveryData not found")
-	}
-	return &Delivery{mes}, nil
+type APK struct {
+   m protobuf.Message
 }
 
-// SplitDeliveryData
-type Split_Data struct {
-	m protobuf.Message
+func (a APK) Field1() (string, bool) {
+   if v, ok := <-a.m.GetBytes(1); ok {
+      return string(v), true
+   }
+   return "", false
 }
 
-// downloadUrl
-func (s Split_Data) Download_URL() (string, error) {
-	return s.m.String(5)
+func (a APK) URL() (string, bool) {
+   if v, ok := <-a.m.GetBytes(5); ok {
+      return string(v), true
+   }
+   return "", false
 }
 
-// id
-func (s Split_Data) ID() (string, error) {
-	return s.m.String(1)
-}
-
-// AppFileMetadata
-type App_File_Metadata struct {
-	m protobuf.Message
-}
-
-// downloadUrl
-func (a App_File_Metadata) Download_URL() (string, error) {
-	return a.m.String(4)
-}
-
-// fileType
-func (a App_File_Metadata) File_Type() (uint64, error) {
-	return a.m.Varint(1)
-}
-
-// AndroidAppDeliveryData
 type Delivery struct {
-	m protobuf.Message
+   m protobuf.Message
 }
 
-func (d Delivery) Additional_File() []App_File_Metadata {
-	var files []App_File_Metadata
-	// additionalFile
-	d.m.Messages(4, func(file protobuf.Message) {
-		files = append(files, App_File_Metadata{file})
-	})
-	return files
+func (d Delivery) APK() chan APK {
+   vs := make(chan APK)
+   go func() {
+      for v := range d.m.Get(15) {
+         vs <- APK{v}
+      }
+      close(vs)
+   }()
+   return vs
 }
 
-// downloadUrl
-func (d Delivery) Download_URL() (string, error) {
-	return d.m.String(3)
+func (d Delivery) OBB() chan OBB {
+   vs := make(chan OBB)
+   go func() {
+      for v := range d.m.Get(4) {
+         vs <- OBB{v}
+      }
+      close(vs)
+   }()
+   return vs
 }
 
-func (d Delivery) Split_Data() []Split_Data {
-	var splits []Split_Data
-	// splitDeliveryData
-	d.m.Messages(15, func(split protobuf.Message) {
-		splits = append(splits, Split_Data{split})
-	})
-	return splits
+func (d Delivery) URL() (string, bool) {
+   if v, ok := <-d.m.GetBytes(3); ok {
+      return string(v), true
+   }
+   return "", false
 }
 
-type File struct {
-	Package_Name string
-	Version_Code uint64
+func (g GoogleCheckin) Delivery(
+   auth GoogleAuth, app StoreApp, single bool,
+) (*Delivery, error) {
+   req, err := http.NewRequest("GET", "https://android.clients.google.com", nil)
+   if err != nil {
+      return nil, err
+   }
+   req.URL.Path = "/fdfe/delivery"
+   req.URL.RawQuery = url.Values{
+      "doc": {app.ID},
+      "vc":  {strconv.FormatUint(app.Version, 10)},
+   }.Encode()
+   auth.authorization(req)
+   user_agent(req, single)
+   if err := g.x_dfe_device_id(req); err != nil {
+      return nil, err
+   }
+   res, err := http.DefaultClient.Do(req)
+   if err != nil {
+      return nil, err
+   }
+   defer res.Body.Close()
+   data, err := io.ReadAll(res.Body)
+   if err != nil {
+      return nil, err
+   }
+   var d Delivery
+   if err := d.m.Consume(data); err != nil {
+      return nil, err
+   }
+   d.m = <-d.m.Get(1)
+   d.m = <-d.m.Get(21)
+   switch <-d.m.GetVarint(1) {
+   case 3:
+      return nil, errors.New("acquire")
+   case 5:
+      return nil, errors.New("version")
+   }
+   d.m = <-d.m.Get(2)
+   return &d, nil
 }
 
-func (f File) APK(id string) string {
-	var b []byte
-	b = append(b, f.Package_Name...)
-	b = append(b, '-')
-	if id != "" {
-		b = append(b, id...)
-		b = append(b, '-')
-	}
-	b = strconv.AppendUint(b, f.Version_Code, 10)
-	b = append(b, ".apk"...)
-	return string(b)
+type OBB struct {
+   m protobuf.Message
 }
 
-func (f File) OBB(file_type uint64) string {
-	var b []byte
-	if file_type >= 1 {
-		b = append(b, "patch"...)
-	} else {
-		b = append(b, "main"...)
-	}
-	b = append(b, '.')
-	b = strconv.AppendUint(b, f.Version_Code, 10)
-	b = append(b, '.')
-	b = append(b, f.Package_Name...)
-	b = append(b, ".obb"...)
-	return string(b)
+func (o OBB) Field1() (uint64, bool) {
+   if v, ok := <-o.m.GetVarint(1); ok {
+      return uint64(v), true
+   }
+   return 0, false
+}
+
+func (o OBB) URL() (string, bool) {
+   if v, ok := <-o.m.GetBytes(4); ok {
+      return string(v), true
+   }
+   return "", false
 }

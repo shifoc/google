@@ -1,11 +1,11 @@
 module 154.pages.dev/google
 
-go 1.20
+go 1.22.0
 
 require (
-	154.pages.dev/encoding v1.12.2
-	154.pages.dev/http v1.0.9
-	154.pages.dev/strconv v1.0.4
+	154.pages.dev/encoding v1.20.9
+	154.pages.dev/log v1.2.0
+	154.pages.dev/protobuf v1.2.0
 )
 
-require google.golang.org/protobuf v1.31.0 // indirect
+require google.golang.org/protobuf v1.33.0 // indirect

@@ -2,7 +2,7 @@
 
 Download APK from Google Play or send API requests
 
-## How to build?
+## how to build?
 
 This module works with Windows, macOS or Linux. Download Go [1] and extract
 archive. Then download Google Play Zip and extract archive. Then navigate to:
@@ -19,73 +19,68 @@ go build
 
 1. https://go.dev/dl
 
-## Tool examples
+## tool examples
 
-visit this page and sign in:
+[sign in](https://accounts.google.com/embedded/setup/v2/android) with your Google
+Account. then get authorization code (`oauth_token`) cookie from
+[browser&nbsp;storage][1]. should be valid for 10 minutes. then exchange
+authorization code for refresh token (`aas_et`):
 
-https://accounts.google.com/embedded/setup/android
+~~~
+play -o oauth2_4/0Adeu5B...
+~~~
 
-then get authorization code (`oauth_token`) cookie from the browser. should be
-valid for 10 minutes:
+[1]://firefox-source-docs.mozilla.org/devtools-user/storage_inspector
 
-<https://firefox-source-docs.mozilla.org/devtools-user/storage_inspector>
+create a file containing `X-DFE-Device-ID` (GSF ID) for future requests:
 
-then exchange authorization code for refresh token (`aas_et`):
+~~~
+play -d
+~~~
 
-```
-play -c oauth2_4/0Adeu5B...
-```
+get app details:
 
-Create a file containing `X-DFE-Device-ID` (GSF ID) for future requests:
-
-```
-play -device
-```
-
-Get app details:
-
-```
-> play -d com.google.android.youtube
-creator: Google LLC
+~~~
+> play -i com.google.android.youtube
+creator:  Google LLC
+offer: 0 LBP
+version:  19.16.38
+downloads:  Apr 24, 2024
 file: APK APK APK APK
-installation size: 49.53 megabyte
-downloads: 14.05 billion
-offer: 0 USD
-title: YouTube
-upload date: May 19, 2023
-version: 18.20.34
-version code: 1537856960
-changelog: For new features, look for in-product education &amp; notifications sharing the feature and how to use it!
-```
+android version: 8.0 and up
+downloads: 16.22 billion
+name: YouTube
+size: 113.80 megabyte
+version code: 1545729472
+changelog:  For new features, look for in-product education &amp; notifications sharing the feature and how to use it!
+~~~
 
-Purchase app. Only needs to be done once per Google account:
+acquire app. only needs to be done once per Google account:
 
-```
-play -d com.google.android.youtube -purchase
-```
+~~~
+play -i com.google.android.youtube -a
+~~~
 
-Download APK. You need to specify any valid version code. The latest code is
-provided by the previous details command. If APK is split, all pieces will be
+download APK. you need to specify any valid version code. the latest code is
+provided by the previous details command. if APK is split, all pieces will be
 downloaded:
 
-```
-play -d com.google.android.youtube -v 1537856960
-```
+~~~
+play -i com.google.android.youtube -v 1540222400
+~~~
 
-## Goals
+## goals
 
-1. support Google Services Framework 21
-2. support Google Play Store 11
+1. [Pixel 6](//wikipedia.org/wiki/Pixel_6) (2021)
+2. [Android 12](//wikipedia.org/wiki/Android_12) (2021)
+3. [Google Play](//wikipedia.org/wiki/Google_Play) 29 (2022)
 
-Non goals:
+non goals:
 
-Supporting older items. sadly this means that email/password login is no longer
-possible, and maybe never be again. up to Google Services Framework 19 (2013),
-the login is protected with TLS fingerprinting, which is difficult but possible
-to bypass. Since Google Services Framework 21 (2014), Google uses bot-guard via
-JavaScript to protect the login. I do not know how to reverse that, and I did
-not find any implementations online.
+email/password login. up to Android 4.4 (2013), the login is protected with TLS
+fingerprinting, which is difficult but possible to bypass. since Android 5
+(2014), Google uses bot-guard via JavaScript to protect the login. I do not
+know how to reverse that, and I did not find any implementations online.
 
-## Thanks:
-
-    - https://github.com/1268/google
+## thanks
+- https://github.com/3052/google

@@ -1,135 +1,86 @@
 package play
 
 import (
-	"fmt"
-	"os"
-	"slices"
-	"strconv"
-	"testing"
-	"time"
+   "fmt"
+   "os"
+   "testing"
+   "time"
 )
 
-// min size {2023-07-28 0 5785991 22473050 kr.sira.metal}
-// max downloads {2023-08-21 0 88255721 14594265118 com.google.android.youtube}
-var apps = []app_type{
-	{date: "2023-02-01", platform: 1, size: 18708178, downloads: 1563645747, doc: "com.miui.weather2"},
-	{date: "2023-02-20", platform: 0, size: 37564028, downloads: 347934672, doc: "org.videolan.vlc"},
-	{date: "2023-04-12", platform: 0, size: 13591550, downloads: 5094063, doc: "com.amctve.amcfullepisodes"},
-	{date: "2023-05-08", platform: 0, size: 72540261, downloads: 143756560, doc: "br.com.rodrigokolb.realdrum"},
-	{date: "2023-06-23", platform: 1, size: 96751752, downloads: 90246658, doc: "com.sygic.aura"},
-	{date: "2023-06-30", platform: 1, size: 620149250, downloads: 331766132, doc: "com.supercell.brawlstars"},
-	{date: "2023-07-28", platform: 0, size: 5785991, downloads: 22453676, doc: "kr.sira.metal"},
-	{date: "2023-08-04", platform: 1, size: 73687367, downloads: 536391, doc: "com.app.xt"},
-	{date: "2023-08-04", platform: 2, size: 870402375, downloads: 84214957, doc: "com.miHoYo.GenshinImpact"},
-	{date: "2023-08-08", platform: 0, size: 9035872, downloads: 691956417, doc: "com.google.android.apps.walletnfcrel"},
-	{date: "2023-08-09", platform: 1, size: 95833969, downloads: 15433116, doc: "com.madhead.tos.zh"},
-	{date: "2023-08-10", platform: 0, size: 82128315, downloads: 90235324, doc: "com.clearchannel.iheartradio.controller"},
-	{date: "2023-08-10", platform: 2, size: 147816312, downloads: 297401, doc: "com.kakaogames.twodin"},
-	{date: "2023-08-15", platform: 0, size: 157677501, downloads: 195745539, doc: "app.source.getcontact"},
-	{date: "2023-08-18", platform: 1, size: 98435268, downloads: 49600879, doc: "com.xiaomi.smarthome"},
-	{date: "2023-08-21", platform: 0, size: 88255721, downloads: 14592454008, doc: "com.google.android.youtube"},
-	{date: "2023-08-21", platform: 0, size: 86931226, downloads: 34567828, doc: "com.cabify.rider"},
-	{date: "2023-08-21", platform: 0, size: 70172136, downloads: 5008322663, doc: "com.instagram.android"},
-	{date: "2023-08-21", platform: 1, size: 146603067, downloads: 88030401, doc: "com.binance.dev"},
-	{date: "2023-08-22", platform: 0, size: 61406761, downloads: 127162129, doc: "org.thoughtcrime.securesms"},
-	{date: "2023-08-22", platform: 0, size: 32784749, downloads: 921326697, doc: "com.pinterest"},
-	{date: "2023-08-24", platform: 1, size: 110846862, downloads: 17990819, doc: "com.axis.drawingdesk.v3"},
-}
-
-func (a app_type) GoString() string {
-	var b []byte
-	b = append(b, "{date:"...)
-	b = strconv.AppendQuote(b, a.date)
-	b = append(b, ",platform:"...)
-	b = strconv.AppendInt(b, a.platform, 10)
-	b = append(b, ",size:"...)
-	b = strconv.AppendUint(b, a.size, 10)
-	b = append(b, ",downloads:"...)
-	b = strconv.AppendUint(b, a.downloads, 10)
-	b = append(b, ",doc:"...)
-	b = strconv.AppendQuote(b, a.doc)
-	b = append(b, '}')
-	return string(b)
-}
-
-func Test_Details(t *testing.T) {
-	home, err := os.UserHomeDir()
-	if err != nil {
-		t.Fatal(err)
-	}
-	home += "/google/play"
-	var head Header
-	{
-		b, err := os.ReadFile(home + "/token.txt")
-		if err != nil {
-			t.Fatal(err)
-		}
-		head.Set_Authorization(b)
-	}
-	head.Set_Agent(false)
-	for i, app := range apps {
-		{
-			b, err := os.ReadFile(home + "/" + Platforms[app.platform] + ".bin")
-			if err != nil {
-				t.Fatal(err)
-			}
-			head.Set_Device(b)
-		}
-		d, err := head.Details(app.doc)
-		if err != nil {
-			t.Fatal(err)
-		}
-		if _, err := d.Version(); err != nil {
-			t.Fatal(err)
-		}
-		if _, err := d.Version_Code(); err != nil {
-			t.Fatal(err)
-		}
-		if _, err := d.Title(); err != nil {
-			t.Fatal(err)
-		}
-		apps[i].size, err = d.Installation_Size()
-		if err != nil {
-			t.Fatal(err)
-		}
-		if _, err := d.Currency_Code(); err != nil {
-			t.Fatal(err)
-		}
-		{
-			s, err := d.Upload_Date()
-			if err != nil {
-				t.Fatal(err)
-			}
-			d, err := time.Parse("Jan 2, 2006", s)
-			if err != nil {
-				t.Fatal(err)
-			}
-			apps[i].date = d.Format("2006-01-02")
-		}
-		{
-			d, err := d.Num_Downloads()
-			if err != nil {
-				t.Fatal(err)
-			}
-			apps[i].downloads = d
-		}
-		fmt.Printf("%#v,\n", app)
-		time.Sleep(99 * time.Millisecond)
-	}
-	min_size := slices.MinFunc(apps, func(a, b app_type) int {
-		return int(a.size - b.size)
-	})
-	fmt.Println("min size", min_size)
-	max_downloads := slices.MaxFunc(apps, func(a, b app_type) int {
-		return int(a.downloads - b.downloads)
-	})
-	fmt.Println("max downloads", max_downloads)
-}
-
-type app_type struct {
-	date      string
-	platform  int64 // X-DFE-Device-ID
-	size      uint64
-	downloads uint64
-	doc       string
+func TestDetails(t *testing.T) {
+   home, err := os.UserHomeDir()
+   if err != nil {
+      t.Fatal(err)
+   }
+   home += "/google-play"
+   var token GoogleToken
+   token.Data, err = os.ReadFile(home + "/token.txt")
+   if err != nil {
+      t.Fatal(err)
+   }
+   if err := token.Unmarshal(); err != nil {
+      t.Fatal(err)
+   }
+   var auth GoogleAuth
+   if err := auth.Auth(token); err != nil {
+      t.Fatal(err)
+   }
+   for _, app := range apps {
+      name := fmt.Sprint(home, "/", app.platform, ".bin")
+      var checkin GoogleCheckin
+      checkin.Data, err = os.ReadFile(name)
+      if err != nil {
+         t.Fatal(err)
+      }
+      if err := checkin.Unmarshal(); err != nil {
+         t.Fatal(err)
+      }
+      detail, err := checkin.Details(auth, app.id, false)
+      if err != nil {
+         t.Fatal(err)
+      }
+      if _, ok := detail.Downloads(); !ok {
+         t.Fatal("downloads")
+      }
+      if _, ok := detail.Name(); !ok {
+         t.Fatal("name")
+      }
+      if _, ok := detail.field_6(); !ok {
+         t.Fatal("field 6")
+      }
+      if _, ok := detail.field_8_1(); !ok {
+         t.Fatal("field 8 1")
+      }
+      if _, ok := detail.field_8_2(); !ok {
+         t.Fatal("field 8 2")
+      }
+      if _, ok := detail.field_13_1_4(); !ok {
+         t.Fatal("field 13 1 4")
+      }
+      app.date = func() string {
+         u, ok := detail.field_13_1_16()
+         if !ok {
+            t.Fatal("field 13 1 16")
+         }
+         p, err := time.Parse("Jan 2, 2006", u)
+         if err != nil {
+            t.Fatal(err)
+         }
+         return p.Format("2006-01-02")
+      }()
+      if _, ok := <-detail.field_13_1_17(); !ok {
+         t.Fatal("field 13 1 17")
+      }
+      if _, ok := detail.field_13_1_82_1_1(); !ok {
+         t.Fatal("field 13 1 82 1 1")
+      }
+      if _, ok := detail.size(); !ok {
+         t.Fatal("size")
+      }
+      if _, ok := detail.version_code(); !ok {
+         t.Fatal("version code")
+      }
+      fmt.Printf("%#v,\n", app)
+      time.Sleep(99 * time.Millisecond)
+   }
 }
